@@ -41,7 +41,6 @@ export async function postProject(prevState: State, formData: FormData) {
     }
   }
 
-  const (image, title, category) = validatedFields.data;
 
   try {
     const response = await fetch("http://localhost:5678/api/works",
@@ -59,12 +58,10 @@ export async function postProject(prevState: State, formData: FormData) {
       message: responseData.message,
     }
   } catch (error) {
-    return {
-      errors: {
-        message: error.message,
-      },
-      message: "Failed to post a new project"
-    }
+    return { message: error }
   }
 
 }
+
+
+export function 
