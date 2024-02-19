@@ -1,3 +1,4 @@
+"use client"
 
 import { useFormik } from "formik";
 import axios, { AxiosError } from "axios";
@@ -5,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from 'react';
 import { useSignIn } from "react-auth-kit";
 
-function ConnectForm(_props: any) {
+export default function loginFormFormik(_props: any) {
   const [error, setError] = useState("");
   const signIn = useSignIn();
   const navigate = useNavigate();
@@ -65,4 +66,3 @@ function ConnectForm(_props: any) {
   );
 }
 
-export default AxiosForm;

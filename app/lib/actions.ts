@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { z } from "zod"
 
 const FormSchema = z.object({
@@ -63,5 +64,43 @@ export async function postProject(prevState: State, formData: FormData) {
 
 }
 
+const AuthSchema = z.object({
+  id: z.string(),
+  email: z.string(),
+  password: z.string()
+})
 
-export function 
+const Authenticate = AuthSchema.omit({ id: true })
+
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  const validatedFields = Authenticate.safeParse({
+    email: formData.get("email"),
+    password: formData.get("password")
+  })
+
+  if (!validatedFields) {
+    throw new Error("Something went wrong when trying to login.")
+  }
+
+  try {
+    let response = await fetch("http://localhost:5678/api/users/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: formData
+      })
+    if (!response) {
+      return null
+    }
+    const user = await response.json()
+
+    return user
+  } catch (error) {
+    throw new Error("An error occurred when trying to connect.")
+  }
+}
