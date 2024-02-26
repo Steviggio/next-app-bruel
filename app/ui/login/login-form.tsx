@@ -18,9 +18,19 @@ export default function LoginForm() {
           type="email"
         />
         <label htmlFor="password">Mot de passe</label>
-        <input id="password" name="password" type="password"/>
+        <input id="password" name="password" type="password" />
         <input id="btn-connect" type="submit" value="Se connecter" />
       </form>
     </>
   )
 }
+
+// function LoginButton() {
+//   const { pending } = useFormStatus();
+
+//   return (
+//     <Button>
+
+//     </Button>
+//   )
+// }

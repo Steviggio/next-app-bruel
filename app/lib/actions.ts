@@ -1,5 +1,7 @@
 import { headers } from "next/headers";
-import { z } from "zod"
+import { z } from "zod";
+import { unstable_noStore as noStore } from "next/cache";
+import { redirect } from "next/navigation"
 
 const FormSchema = z.object({
   id: z.string(),
@@ -18,10 +20,18 @@ export type State = {
 }
 
 
-export async function fetchProject() {
-  const data = await fetch("http://localhost:5678/api/works")
-  console.log(data)
-  return data
+export async function fetchProjects() {
+  noStore()
+  try {
+    console.log("Fetching gallery...")
+    const response = await fetch("http://localhost:5678/api/works")
+    const data = await response.json()
+
+    return data
+  } catch (error) {
+    console.error("Error when fetching datas", error)
+    throw new Error("Failed to fetch datas.")
+  }
 }
 
 const PostProject = FormSchema.omit({ id: true })
@@ -54,9 +64,9 @@ export async function postProject(prevState: State, formData: FormData) {
       throw new Error("Failed to post a new project");
     }
 
-    const responseData = await response.json();
+    const data = await response.json();
     return {
-      message: responseData.message,
+      message: data.message,
     }
   } catch (error) {
     return { message: error }
@@ -80,24 +90,35 @@ export async function authenticate(
     email: formData.get("email"),
     password: formData.get("password")
   })
+  console.log(validatedFields)
 
   if (!validatedFields) {
     throw new Error("Something went wrong when trying to login.")
   }
 
+  console.log(formData)
+  const email = formData.get('email')
+  const password = formData.get('password')
+
+  const form = { "email": email, "password": password }
+  const payload = JSON.stringify(form)
   try {
+
     let response = await fetch("http://localhost:5678/api/users/login",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: formData
+        body: payload
       })
     if (!response) {
       return null
     }
     const user = await response.json()
+    console.log(user)
+    redirect("/")
+
 
     return user
   } catch (error) {

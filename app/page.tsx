@@ -1,10 +1,12 @@
 import LoginForm from "./ui/login/login-form";
 
 
-export default function Home() {
+export default function Page() {
   return (
     <>
-      <LoginForm />
+      <main>
+        <LoginForm />
+      </main>
     </>
   );
 }
