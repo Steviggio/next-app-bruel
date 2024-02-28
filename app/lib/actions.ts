@@ -1,7 +1,21 @@
-import { headers } from "next/headers";
+"use server"
+
+// import Cookies from "universal-cookie";
 import { z } from "zod";
 import { unstable_noStore as noStore } from "next/cache";
 import { redirect } from "next/navigation"
+import axios from "axios"
+import { cookies } from 'next/headers'
+
+// export async function handleLogin(sessionData) {
+//   const encryptedSessionData = encrypt(sessionData)
+//   cookies().set('session', encryptedSessionData, {
+//     httpOnly: true,
+//     secure: process.env.NODE_ENV === "production",
+//     maxAge: 60 * 60 * 24 * 7,
+//     path: "/",
+//   })
+// }
 
 const FormSchema = z.object({
   id: z.string(),
@@ -82,6 +96,17 @@ const AuthSchema = z.object({
 
 const Authenticate = AuthSchema.omit({ id: true })
 
+
+async function setCookies(data: any) {
+  const jsonData = JSON.stringify(data)
+  cookies().set({
+    name: "userData",
+    value: jsonData,
+    httpOnly: true,
+    path: '/'
+  })
+}
+
 export async function authenticate(
   prevState: string | undefined,
   formData: FormData,
@@ -90,38 +115,37 @@ export async function authenticate(
     email: formData.get("email"),
     password: formData.get("password")
   })
-  console.log(validatedFields)
+  // console.log(validatedFields)
 
   if (!validatedFields) {
     throw new Error("Something went wrong when trying to login.")
   }
 
-  console.log(formData)
+  // console.log(formData)
   const email = formData.get('email')
   const password = formData.get('password')
 
   const form = { "email": email, "password": password }
-  const payload = JSON.stringify(form)
   try {
 
-    let response = await fetch("http://localhost:5678/api/users/login",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: payload
-      })
-    if (!response) {
-      return null
-    }
-    const user = await response.json()
-    console.log(user)
-    redirect("/")
+    const response = await axios.post("http://localhost:5678/api/users/login",
+      form
+    );
+    // console.log("Response ----- ", response)
+    const userData = response.data;
+    console.log(userData)
+    setCookies(userData)
+
+    // console.log("User ------", userData)
 
 
-    return user
+
   } catch (error) {
     throw new Error("An error occurred when trying to connect.")
+    redirect("/login")
   }
+
+  redirect("/")
+
+
 }
