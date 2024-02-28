@@ -1,10 +1,19 @@
+import clsx from "clsx";
 import Link from "next/link";
+import { cookies } from "next/headers";
 
 const Header = () => {
-
+  const cookieStore = cookies();
+  const userData = cookieStore.get("userData")
   return (
     <>
-      <section className="modal-management visible">
+
+      <section className={clsx(
+        "modal-management visible",
+        {
+          "invisible": !userData
+        }
+      )}>
         <div id="modal" className="modal-btn">
           <img src="" alt="pen-to-square icon" />
           <p>Mode édition</p>
