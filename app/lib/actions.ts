@@ -34,19 +34,6 @@ export type State = {
 }
 
 
-export async function fetchProjects() {
-  noStore()
-  try {
-    console.log("Fetching gallery...")
-    const response = await fetch("http://localhost:5678/api/works")
-    const data = await response.json()
-
-    return data
-  } catch (error) {
-    console.error("Error when fetching datas", error)
-    throw new Error("Failed to fetch datas.")
-  }
-}
 
 const PostProject = FormSchema.omit({ id: true })
 
@@ -117,8 +104,11 @@ export async function authenticate(
   })
   // console.log(validatedFields)
 
-  if (!validatedFields) {
-    throw new Error("Something went wrong when trying to login.")
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Something went wrong when trying to login."
+    }
   }
 
   // console.log(formData)
@@ -128,21 +118,31 @@ export async function authenticate(
   const form = { "email": email, "password": password }
   try {
 
-    const response = await axios.post("http://localhost:5678/api/users/login",
-      form
+    const response = await fetch("http://localhost:5678/api/users/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(form)
+      }
     );
     // console.log("Response ----- ", response)
-    const userData = response.data;
-    console.log(userData)
-    await setCookies(userData)
+    const userData = await response.json();
+    if (userData.token) {
+      console.log(userData)
+      await setCookies(userData)
+    } else {
+      return { message: "Wrong email or password" }
+    }
 
     // console.log("User ------", userData)
 
 
-
   } catch (error) {
-    throw new Error("Wrong password or email")
+    return { message: "Wrong password or email" }
   }
+
 
   redirect("/")
 
