@@ -134,15 +134,14 @@ export async function authenticate(
     // console.log("Response ----- ", response)
     const userData = response.data;
     console.log(userData)
-    setCookies(userData)
+    await setCookies(userData)
 
     // console.log("User ------", userData)
 
 
 
   } catch (error) {
-    throw new Error("An error occurred when trying to connect.")
-    redirect("/login")
+    throw new Error("Wrong password or email")
   }
 
   redirect("/")

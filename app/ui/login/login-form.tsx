@@ -2,12 +2,15 @@
 
 import { authenticate } from "../../lib/actions";
 import { useFormState, useFormStatus } from "react-dom";
+import { useState } from "react"
+
 
 export default function LoginForm() {
   const [errorMessage, dispatch] = useFormState(authenticate, undefined);
-
+  // const [errorMessage, setErrorMessage] = useState("")
   return (
     <>
+      {errorMessage && <div>{errorMessage}</div>}
       <form className="login" action={dispatch}>
         {/* <div>{error}</div> */}
         <h2>Se connecter</h2>
