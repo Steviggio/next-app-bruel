@@ -1,16 +1,32 @@
-import { fetchProjects } from "../../lib/actions"
+"use client"
+import dynamic from "next/dynamic"
+import { fetchProjects } from "../../lib/data"
 import { Work } from "../../lib/definitions"
+import Image from "next/image"
+// import CategoriesList from "./categories"
 
-export async function Gallery() {
+const CategoriesList = dynamic(() => import("../portfolio/categories"))
+
+
+export default async function Gallery() {
+
   const works = await fetchProjects()
 
   return (
-    <div className="gallery">
-      {works.map((item: Work) => {
-        <figure key={item.id}>
-          <img src={item.imageUrl} alt={`${item.imageUrl} image`} />
-        </figure>
-      })}
-    </div>
+    <>
+      <CategoriesList />
+      <div className="gallery">
+        {works.map((item: Work) => (
+          <figure key={item.id}>
+            <Image
+              src={item.imageUrl}
+              alt={`${item.imageUrl} image`}
+              height={430}
+              width={320}
+            />
+          </figure>
+        ))}
+      </div>
+    </>
   )
 }

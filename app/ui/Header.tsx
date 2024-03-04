@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { cookies } from "next/headers";
+import Image from "next/image";
 
 const Header = () => {
   const cookieStore = cookies();
@@ -15,7 +16,12 @@ const Header = () => {
         }
       )}>
         <div id="modal" className="modal-btn">
-          <img src="" alt="pen-to-square icon" />
+          <Image 
+          src="/icons/pen-to-square-white.png" 
+          alt="pen-to-square icon"
+          width={15}
+          height={15}
+          />
           <p>Mode édition</p>
           <button className="btn-modal">publier les changements</button>
         </div>
